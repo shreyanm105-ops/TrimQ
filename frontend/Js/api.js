@@ -2,7 +2,7 @@
 // TrimQ API Helper
 // ========================================
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "https://trimq.onrender.com";
 
 function getToken() {
     return localStorage.getItem("trimq_token");
@@ -64,6 +64,11 @@ async function apiRequest(endpoint, options = {}) {
     }
 }
 
+
+// ========================================
+// API Error Formatter
+// ========================================
+
 function formatApiError(error) {
     if (typeof error === "string") {
         return error;
@@ -78,11 +83,17 @@ function formatApiError(error) {
 
     if (error && typeof error === "object") {
         const message = error.msg || error.message || error.detail;
+
         if (typeof message === "string") {
             const location = Array.isArray(error.loc)
-                ? error.loc.filter(part => !["body", "query", "path"].includes(part)).join(".")
+                ? error.loc
+                    .filter(part => !["body", "query", "path"].includes(part))
+                    .join(".")
                 : "";
-            return location ? `${location}: ${message}` : message;
+
+            return location
+                ? `${location}: ${message}`
+                : message;
         }
     }
 
@@ -149,7 +160,7 @@ async function apiDelete(endpoint) {
 
 
 // ========================================
-// Authentication helpers
+// Authentication Helpers
 // ========================================
 
 function saveAuth(token, user) {
@@ -182,7 +193,7 @@ function logout() {
 
 
 // ========================================
-// Role helpers
+// Role Helpers
 // ========================================
 
 function isCustomer() {
