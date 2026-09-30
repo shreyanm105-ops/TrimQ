@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Barber Dashboard - TrimQ</title>
+
+    <link rel="stylesheet" href="../css/barber.css">
+
+</head>
+
+<body>
+
+<aside class="barber-sidebar">
+
+    <div class="barber-brand">
+        <span>✂</span> TrimQ
+    </div>
+
+    <p class="barber-nav-title">
+        BARBER PANEL
+    </p>
+
+
+    <nav>
+
+        <a href="dashboard.html" class="active">
+            <span>⌂</span>
+            Dashboard
+        </a>
+
+        <a href="appointments.html">
+            <span>▣</span>
+            Appointments
+        </a>
+
+        <a href="queue.html">
+            <span>◷</span>
+            Live Queue
+        </a>
+
+        <a href="services.html">
+            <span>✂</span>
+            Services
+        </a>
+
+        <a href="shop-settings.html">
+            <span>⚙</span>
+            Shop Settings
+        </a>
+
+    </nav>
+
+
+    <div class="barber-sidebar-bottom">
+
+        <a href="../index.html">
+            ← Back to Home
+        </a>
+
+        <button type="button" id="logoutBtn">
+            ↪ Logout
+        </button>
+
+    </div>
+
+</aside>
+
+
+<main class="barber-main">
+
+
+<header class="barber-topbar">
+
+    <div>
+
+        <p class="barber-label">
+            BARBER DASHBOARD
+        </p>
+
+        <h1>
+            Good evening,
+            <span id="barberName">
+                Barber
+            </span>
+            👋
+        </h1>
+
+        <p>
+            Manage your shop, appointments and live queue.
+        </p>
+
+    </div>
+
+
+    <div class="barber-avatar" id="barberAvatar">
+        B
+    </div>
+
+</header>
+
+
+<section class="barber-hero">
+
+    <div>
+
+        <span>
+            SHOP OVERVIEW
+        </span>
+
+        <h2>
+            Keep your day organized.
+        </h2>
+
+        <p>
+            Manage customers, services and queue
+            from one simple dashboard.
+        </p>
+
+        <a class="hero-btn" href="appointments.html">Open appointments <span>→</span></a>
+
+    </div>
+
+    <div class="barber-hero-icon">
+        ✂
+    </div>
+
+</section>
+
+
+<section class="barber-stats">
+
+
+    <a class="barber-stat" href="appointments.html">
+
+        <div class="barber-stat-icon purple">
+            ▣
+        </div>
+
+        <p>Today's Appointments</p>
+
+        <h3 id="todayAppointmentsCount">—</h3>
+
+    </a>
+
+
+    <a class="barber-stat" href="appointments.html">
+
+        <div class="barber-stat-icon orange">
+            ◷
+        </div>
+
+        <p>Pending Bookings</p>
+
+        <h3 id="pendingBookingsCount">—</h3>
+
+    </a>
+
+
+    <a class="barber-stat" href="queue.html">
+
+        <div class="barber-stat-icon green">
+            ✓
+        </div>
+
+        <p>Completed Today</p>
+
+        <h3 id="waitingCustomersCount">—</h3>
+
+    </a>
+
+
+    <a class="barber-stat" href="appointments.html">
+
+        <div class="barber-stat-icon blue">
+            ₹
+        </div>
+
+        <p>Today's Revenue</p>
+
+        <h3 id="completedTodayCount">—</h3>
+
+    </a>
+
+
+    <a class="barber-stat" href="appointments.html">
+
+        <div class="barber-stat-icon blue">
+            ₹
+        </div>
+
+        <p>Today's Revenue</p>
+
+        <h3 id="todayRevenue">—</h3>
+
+    </a>
+
+
+</section>
+
+
+<div class="barber-dashboard-grid">
+
+
+<section class="barber-card">
+
+    <div class="barber-card-header">
+
+        <div>
+
+            <p class="barber-label">
+                TODAY
+            </p>
+
+            <h2>
+                Upcoming Appointments
+            </h2>
+
+        </div>
+
+        <a href="appointments.html">
+            View All →
+        </a>
+
+    </div>
+
+
+    <div class="dashboard-items" id="todayAppointments">
+        <div class="empty-state"><h3>Loading appointments...</h3></div>
+    </div>
+
+</section>
+
+
+<section class="barber-card">
+
+    <div class="barber-card-header">
+
+        <div>
+
+            <p class="barber-label">
+                LIVE
+            </p>
+
+            <h2>
+                Current Queue
+            </h2>
+
+        </div>
+
+        <a href="queue.html">
+            Manage →
+        </a>
+
+    </div>
+
+
+    <div id="dashboardQueueSummary" class="queue-empty">
+        <div class="queue-number">—</div>
+        <div><h3>Loading queue...</h3></div>
+    </div>
+
+</section>
+
+</div>
+
+
+</main>
+
+
+<script src="../Js/api.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", initializeBarberDashboard);
+
+    async function initializeBarberDashboard() {
+        if (!requireBarber()) return;
+
+        const user = getCurrentUser();
+        const name = user?.name || "Barber";
+        document.getElementById("barberName").textContent = name;
+        document.getElementById("barberAvatar").textContent = name.charAt(0).toUpperCase();
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            clearAuth();
+            window.location.href = "../login.html";
+        });
+
+        await loadBarberDashboard();
+    }
+
+    async function loadBarberDashboard() {
+        try {
+            const [appointmentsResponse, queueResponse, servicesResponse] = await Promise.all([
+                apiGet("/api/barber/appointments"),
+                apiGet("/api/barber/queue"),
+                apiGet("/api/barber/services")
+            ]);
+            const appointments = Array.isArray(appointmentsResponse) ? appointmentsResponse : [];
+            const queue = Array.isArray(queueResponse) ? queueResponse : [];
+            const services = Array.isArray(servicesResponse) ? servicesResponse : [];
+            const today = getLocalDateString(new Date());
+            const todayAppointments = appointments.filter(item => item.booking_date === today);
+            const waiting = queue.filter(item => item.status === "waiting");
+            const completed = todayAppointments.filter(item => item.status === "completed");
+            const pending = todayAppointments.filter(item => item.status === "booked");
+            const servicePrices = new Map(services.map(item => [Number(item.id), Number(item.price) || 0]));
+            const revenue = completed.reduce((total, item) => total + (servicePrices.get(Number(item.service_id)) || 0), 0);
+
+            document.getElementById("todayAppointmentsCount").textContent = todayAppointments.length;
+            document.getElementById("pendingBookingsCount").textContent = pending.length;
+            document.getElementById("waitingCustomersCount").textContent = waiting.length;
+            document.getElementById("completedTodayCount").textContent = completed.length;
+            document.getElementById("todayRevenue").textContent = `₹${revenue}`;
+            renderTodayAppointments(todayAppointments);
+            renderDashboardQueue(queue);
+        } catch (error) {
+            const message = error.message || "Unable to load dashboard data.";
+            document.getElementById("todayAppointments").innerHTML = `<div class="dashboard-error">${escapeDashboardText(message)}</div>`;
+            document.getElementById("dashboardQueueSummary").innerHTML = `<div class="dashboard-error">${escapeDashboardText(message)} <a href="shop-settings.html">Shop settings</a></div>`;
+        }
+    }
+
+    function renderTodayAppointments(appointments) {
+        const container = document.getElementById("todayAppointments");
+        const upcoming = appointments
+            .filter(item => !["completed", "cancelled"].includes(item.status))
+            .sort((first, second) => String(first.slot_time).localeCompare(String(second.slot_time)));
+
+        if (upcoming.length === 0) {
+            container.innerHTML = '<div class="empty-state"><h3>No upcoming appointments today</h3><p>New bookings will appear here.</p></div>';
+            return;
+        }
+
+        container.innerHTML = upcoming.slice(0, 5).map(item => `
+            <div class="dashboard-appointment">
+                <div class="appointment-time">${escapeDashboardText(formatDashboardTime(item.slot_time))}</div>
+                <div class="appointment-person"><strong>${escapeDashboardText(item.customer_name || "Customer")}</strong><span>${escapeDashboardText(item.service_name || "Service")}</span></div>
+                <span class="dashboard-status">${escapeDashboardText(item.status || "booked")}</span>
+            </div>
+        `).join("");
+    }
+
+    function renderDashboardQueue(queue) {
+        const container = document.getElementById("dashboardQueueSummary");
+        const serving = queue.find(item => item.status === "serving");
+        const waiting = queue.filter(item => item.status === "waiting");
+
+        if (!serving && waiting.length === 0) {
+            container.innerHTML = '<div class="queue-number">0</div><div><h3>No customers waiting</h3><p>Your live queue is currently empty.</p></div>';
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="queue-number">${waiting.length}</div>
+            <div>
+                <h3>${waiting.length} waiting</h3>
+                <p>${serving ? `Now serving ${escapeDashboardText(serving.customer_name)}` : "No customer currently being served."}</p>
+            </div>
+        `;
+    }
+
+    function getLocalDateString(date) {
+        return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+    }
+
+    function formatDashboardTime(value) {
+        if (!value) return "-";
+        const [hourText, minute] = value.split(":");
+        const hour = Number(hourText);
+        return Number.isFinite(hour) && minute !== undefined
+            ? `${hour % 12 || 12}:${minute} ${hour >= 12 ? "PM" : "AM"}`
+            : value;
+    }
+
+    function escapeDashboardText(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+</script>
+
+</body>
+</html>

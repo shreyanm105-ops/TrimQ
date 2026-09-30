@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Login - TrimQ</title>
+
+    <link rel="stylesheet" href="./css/auth.css">
+
+</head>
+
+<body>
+
+<div class="auth-page">
+
+    <!-- ================= LEFT SIDE ================= -->
+
+    <section class="auth-left">
+
+        <a href="index.html" class="brand">
+
+            <span class="brand-icon">✂</span>
+
+            Trim<span>Q</span>
+
+        </a>
+
+
+        <div class="auth-left-content">
+
+            <div class="eyebrow">
+                SMART BARBER BOOKING
+            </div>
+
+
+            <h1>
+                Welcome
+                <span>Back!</span>
+            </h1>
+
+
+            <p>
+                Login to manage your barber appointments,
+                track your queue and enjoy a smarter
+                grooming experience.
+            </p>
+
+
+            <div class="benefits">
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <strong>
+                            Book appointments easily
+                        </strong>
+
+                        <span>
+                            Choose your barber and preferred time.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <strong>
+                            Track live queue status
+                        </strong>
+
+                        <span>
+                            Know when your turn is approaching.
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="benefit">
+
+                    <div class="benefit-icon">
+                        ✓
+                    </div>
+
+                    <div>
+                        <strong>
+                            Manage your bookings
+                        </strong>
+
+                        <span>
+                            Keep all your appointments in one place.
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="auth-footer">
+            © 2026 TrimQ
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= RIGHT SIDE ================= -->
+
+    <section class="auth-right">
+
+        <div class="auth-card">
+
+            <div class="mobile-brand">
+
+                <span>✂</span>
+                Trim<span>Q</span>
+
+            </div>
+
+
+            <div class="form-heading">
+
+                <span class="form-label">
+                    WELCOME BACK
+                </span>
+
+                <h2>
+                    Login
+                </h2>
+
+                <p>
+                    Enter your account details to continue
+                </p>
+
+            </div>
+
+
+            <form id="loginForm">
+
+
+                <!-- EMAIL -->
+
+                <div class="input-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- PASSWORD -->
+
+                <div class="input-group">
+
+                    <div class="label-row">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                    </div>
+
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword()">
+
+                            👁
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- REMEMBER -->
+
+                <div class="remember-row">
+
+                    <label class="remember">
+
+                        <input
+                            type="checkbox"
+                            id="rememberMe">
+
+                        <span>
+                            Remember me
+                        </span>
+
+                    </label>
+
+
+                    <a href="#"
+                       onclick="return false;">
+
+                        Forgot password?
+
+                    </a>
+
+                </div>
+
+
+
+                <!-- MESSAGE -->
+
+                <p id="message"
+                   class="form-message">
+                </p>
+
+
+
+                <!-- LOGIN -->
+
+                <button
+                    type="submit"
+                    class="submit-btn">
+
+                    Login to TrimQ
+
+                    <span>→</span>
+
+                </button>
+
+
+            </form>
+
+
+
+            <!-- REGISTER -->
+
+            <div class="switch-auth">
+
+                <span>
+                    New to TrimQ?
+                </span>
+
+                <a href="registration.html">
+                    Create New Account
+                </a>
+
+            </div>
+
+
+
+            <!-- HOME -->
+
+            <a href="index.html"
+               class="back-home">
+
+                ← Back to Home
+
+            </a>
+
+        </div>
+
+    </section>
+
+</div>
+
+
+<script src="./js/api.js"></script>
+
+<script src="./js/auth.js"></script>
+
+
+<script>
+
+function togglePassword() {
+
+    const password =
+        document.getElementById("password");
+
+    const button =
+        document.querySelector(".password-toggle");
+
+
+    if (password.type === "password") {
+
+        password.type = "text";
+
+        button.innerText = "🙈";
+
+    } else {
+
+        password.type = "password";
+
+        button.innerText = "👁";
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>

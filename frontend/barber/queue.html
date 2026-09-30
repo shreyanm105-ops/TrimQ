@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Live Queue - TrimQ</title>
+
+<link rel="stylesheet"
+      href="../css/barber.css">
+
+</head>
+
+<body>
+
+<aside class="barber-sidebar">
+
+    <div class="barber-brand">
+        <span>✂</span> TrimQ
+    </div>
+
+    <p class="barber-nav-title">
+        BARBER PANEL
+    </p>
+
+    <nav>
+
+        <a href="dashboard.html">
+            ⌂ Dashboard
+        </a>
+
+        <a href="appointments.html">
+            ▣ Appointments
+        </a>
+
+        <a href="queue.html" class="active">
+            ◷ Live Queue
+        </a>
+
+        <a href="services.html">
+            ✂ Services
+        </a>
+
+        <a href="shop-settings.html">
+            ⚙ Shop Settings
+        </a>
+
+    </nav>
+
+    <div class="barber-sidebar-bottom">
+
+        <a href="../index.html">
+            ← Back to Home
+        </a>
+
+        <button type="button" id="logoutBtn">
+            ↪ Logout
+        </button>
+
+    </div>
+
+</aside>
+
+
+<main class="barber-main">
+
+<header class="barber-topbar">
+
+    <div>
+
+        <p class="barber-label">
+            REAL-TIME MANAGEMENT
+        </p>
+
+        <h1>
+            Live Queue
+        </h1>
+
+        <p>
+            Manage booked customers and walk-ins in one live line.
+        </p>
+
+    </div>
+
+
+    <div class="queue-live">
+
+        <span></span>
+        LIVE
+
+    </div>
+
+</header>
+
+
+<section class="queue-overview">
+
+    <div class="queue-overview-card">
+
+        <span>
+            WAITING
+        </span>
+
+        <strong id="waitingCount">—</strong>
+
+        <p>
+            Customers
+        </p>
+
+    </div>
+
+
+    <div class="queue-overview-card">
+
+        <span>
+            CURRENT
+        </span>
+
+        <strong id="currentlyServing">—</strong>
+
+        <p>
+            Being served
+        </p>
+
+    </div>
+
+
+    <div class="queue-overview-card">
+
+        <span>ACTIVE QUEUE</span>
+
+        <strong id="activeQueueCount">—</strong>
+
+        <p>
+            Customers
+        </p>
+
+    </div>
+
+</section>
+
+
+<section class="barber-card">
+
+    <div class="barber-card-header">
+
+        <div>
+
+            <p class="barber-label">
+                QUEUE
+            </p>
+
+            <h2>
+                Customers Waiting
+            </h2>
+
+        </div>
+
+        <button class="barber-action" id="addWalkInBtn" type="button" disabled>
+            + Add Walk-in
+        </button>
+
+    </div>
+
+
+    <div id="queueMessage" role="status"></div>
+    <div id="queueList" class="barber-queue-list">
+        <div class="empty-state"><h3>Loading live queue...</h3></div>
+    </div>
+
+</section>
+
+<dialog class="walk-in-dialog" id="walkInDialog">
+    <form id="walkInForm">
+        <h2>Add walk-in customer</h2>
+        <label for="walkInName">Customer name</label>
+        <input id="walkInName" name="name" maxlength="120" required>
+        <label for="walkInPhone">Phone number</label>
+        <input id="walkInPhone" name="phone" type="tel" autocomplete="tel">
+        <p id="walkInMessage" role="alert"></p>
+        <div class="walk-in-actions">
+            <button type="button" id="cancelWalkInBtn">Cancel</button>
+            <button type="submit" class="barber-action" id="saveWalkInBtn">Add to Queue</button>
+        </div>
+    </form>
+</dialog>
+
+</main>
+
+
+<script src="../Js/api.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", initializeBarberQueue);
+
+    async function initializeBarberQueue() {
+        if (!requireBarber()) return;
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            clearAuth();
+            window.location.href = "../login.html";
+        });
+        document.getElementById("addWalkInBtn").addEventListener("click", () => {
+            document.getElementById("walkInMessage").textContent = "";
+            document.getElementById("walkInForm").reset();
+            document.getElementById("walkInDialog").showModal();
+        });
+        document.getElementById("cancelWalkInBtn").addEventListener("click", () => {
+            document.getElementById("walkInDialog").close();
+        });
+        document.getElementById("walkInForm").addEventListener("submit", addWalkIn);
+        document.getElementById("queueList").addEventListener("click", handleQueueAction);
+
+        await loadBarberQueue();
+        window.setInterval(() => {
+            if (!document.hidden) loadBarberQueue();
+        }, 15000);
+    }
+
+    async function loadBarberQueue() {
+        const container = document.getElementById("queueList");
+        try {
+            const queue = await apiGet("/api/barber/queue");
+            renderBarberQueue(Array.isArray(queue) ? queue : []);
+            document.getElementById("addWalkInBtn").disabled = false;
+            document.getElementById("queueMessage").textContent = "";
+        } catch (error) {
+            document.getElementById("addWalkInBtn").disabled = true;
+            const needsShop = error.message === "Shop not found";
+            document.getElementById("queueMessage").innerHTML = needsShop
+                ? 'Create a shop profile before managing the queue. <a href="shop-settings.html">Open Shop Settings</a>'
+                : escapeQueueText(error.message || "Unable to load the queue.");
+            container.innerHTML = "";
+        }
+    }
+
+    function renderBarberQueue(queue) {
+        const waiting = queue.filter(entry => entry.status === "waiting");
+        const serving = queue.find(entry => entry.status === "serving");
+        document.getElementById("waitingCount").textContent = waiting.length;
+        document.getElementById("currentlyServing").textContent = serving?.customer_name || "—";
+        document.getElementById("activeQueueCount").textContent = queue.length;
+
+        const container = document.getElementById("queueList");
+        if (queue.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="queue-empty-icon">◷</div>
+                    <h3>Queue is clear</h3>
+                    <p>New bookings and walk-ins will appear here.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = queue.map(entry => `
+            <article class="barber-queue-row">
+                <span class="queue-position">${Number(entry.position) || "-"}</span>
+                <div class="queue-customer">
+                    <strong>${escapeQueueText(entry.customer_name || "Customer")}</strong>
+                    <span>${entry.booking_id ? `Booking #${Number(entry.booking_id)}` : "Walk-in"}</span>
+                </div>
+                <span class="queue-status ${entry.status === "serving" ? "serving" : "waiting"}">${escapeQueueText(entry.status)}</span>
+                <div class="queue-actions">
+                    ${entry.status === "waiting"
+                        ? `<button type="button" data-action="start" data-queue-id="${Number(entry.id)}">Start</button><button type="button" data-action="cancel" data-queue-id="${Number(entry.id)}">Remove</button>`
+                        : `<button type="button" data-action="complete" data-queue-id="${Number(entry.id)}">Complete</button>`}
+                </div>
+            </article>
+        `).join("");
+    }
+
+    async function addWalkIn(event) {
+        event.preventDefault();
+        const button = document.getElementById("saveWalkInBtn");
+        button.disabled = true;
+        button.textContent = "Adding...";
+
+        try {
+            await apiPost("/api/barber/queue/walk-in", {
+                name: document.getElementById("walkInName").value.trim(),
+                phone: document.getElementById("walkInPhone").value.trim() || null
+            });
+            document.getElementById("walkInDialog").close();
+            await loadBarberQueue();
+        } catch (error) {
+            document.getElementById("walkInMessage").textContent = error.message || "Unable to add walk-in.";
+        } finally {
+            button.disabled = false;
+            button.textContent = "Add to Queue";
+        }
+    }
+
+    async function handleQueueAction(event) {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+        button.disabled = true;
+
+        try {
+            const queueId = encodeURIComponent(button.dataset.queueId);
+            if (button.dataset.action === "start") {
+                await apiPatch(`/api/queue/${queueId}/start`);
+            } else if (button.dataset.action === "complete") {
+                await apiPatch(`/api/queue/${queueId}/complete`);
+            } else {
+                await apiPatch(`/api/barber/queue/${queueId}/status?status=cancelled`);
+            }
+            await loadBarberQueue();
+        } catch (error) {
+            document.getElementById("queueMessage").textContent = error.message || "Unable to update queue.";
+            button.disabled = false;
+        }
+    }
+
+    function escapeQueueText(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+</script>
+
+</body>
+</html>

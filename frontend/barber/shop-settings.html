@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Shop Settings - TrimQ</title>
+
+<link rel="stylesheet"
+      href="../css/barber.css">
+
+<style>
+    body {
+        background: linear-gradient(180deg, #f8fafc 0%, #eef4ff 100%);
+    }
+    .barber-card {
+        border-radius: 20px;
+        box-shadow: 0 18px 38px rgba(15, 23, 42, 0.06);
+        background: #fff;
+        border: 1px solid #e5e7eb;
+    }
+    .settings-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(260px, 0.8fr);
+        gap: 24px;
+        align-items: start;
+    }
+    .settings-form {
+        padding: 20px;
+    }
+    .settings-field input,
+    .settings-field textarea {
+        border-radius: 12px;
+        border: 1px solid #d1d5db;
+        box-shadow: 0 2px 12px rgba(15, 23, 42, 0.02);
+    }
+    .barber-action {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        border: 0;
+        border-radius: 12px;
+        box-shadow: 0 12px 25px rgba(37, 99, 235, 0.2);
+    }
+    .shop-status-card {
+        padding: 20px;
+    }
+    .status-display {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+    }
+    .shop-info-box {
+        margin-top: 14px;
+        border: 1px solid #e5e7eb;
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 14px 16px;
+    }
+    .locate-btn {
+        margin-top: 6px;
+        background: #ecfeff;
+        border: 1px solid #a5f3fc;
+        color: #0f766e;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        font-weight: 700;
+    }
+    @media (max-width: 900px) {
+        .settings-layout { grid-template-columns: 1fr; }
+    }
+</style>
+
+</head>
+
+<body>
+
+<aside class="barber-sidebar">
+
+    <div class="barber-brand">
+        <span>✂</span> TrimQ
+    </div>
+
+    <p class="barber-nav-title">
+        BARBER PANEL
+    </p>
+
+    <nav>
+
+        <a href="dashboard.html">
+            ⌂ Dashboard
+        </a>
+
+        <a href="appointments.html">
+            ▣ Appointments
+        </a>
+
+        <a href="queue.html">
+            ◷ Live Queue
+        </a>
+
+        <a href="services.html">
+            ✂ Services
+        </a>
+
+        <a href="shop-settings.html" class="active">
+            ⚙ Shop Settings
+        </a>
+
+    </nav>
+
+    <div class="barber-sidebar-bottom">
+
+        <a href="../index.html">
+            ← Back to Home
+        </a>
+
+        <button onclick="logout()">
+            ↪ Logout
+        </button>
+
+    </div>
+
+</aside>
+
+
+<main class="barber-main">
+
+<header class="barber-topbar">
+
+    <div>
+
+        <p class="barber-label">
+            SHOP MANAGEMENT
+        </p>
+
+        <h1>
+            Shop Settings
+        </h1>
+
+        <p>
+            Create your shop profile or update its information and opening hours.
+        </p>
+
+    </div>
+
+</header>
+
+
+<section class="settings-layout">
+
+
+<div class="barber-card">
+
+    <div class="barber-card-header">
+
+        <div>
+
+            <p class="barber-label">
+                SHOP PROFILE
+            </p>
+
+            <h2>
+                Basic Information
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <form class="settings-form" id="shopForm">
+
+        <button type="button" class="locate-btn" id="locateShopBtn">📍 Use my live shop location</button>
+
+
+        <div class="settings-field">
+
+            <label>
+                Official Shop Name
+            </label>
+
+            <input
+                type="text"
+                id="officialName"
+                placeholder="e.g. Royal Fade Studio"
+                required
+            >
+
+        </div>
+
+        <div class="settings-field">
+
+            <label>
+                Shop Name / Brand
+            </label>
+
+            <input
+                type="text"
+                id="shopName"
+                placeholder="Enter shop name"
+                required
+            >
+
+        </div>
+
+        <div class="settings-field">
+
+            <label>
+                Tagline
+            </label>
+
+            <input
+                type="text"
+                id="shopTagline"
+                placeholder="Best beard styling & premium grooming"
+            >
+
+        </div>
+
+        <div class="settings-row">
+            <div class="settings-field">
+                <label>City</label>
+                <input type="text" id="shopCity" placeholder="e.g. Pune" required>
+            </div>
+            <div class="settings-field">
+                <label>State</label>
+                <input type="text" id="shopState" placeholder="e.g. Maharashtra" required>
+            </div>
+        </div>
+
+        <div class="settings-row">
+            <div class="settings-field">
+                <label>Pincode</label>
+                <input type="text" id="shopPincode" placeholder="Enter pincode" required>
+            </div>
+            <div class="settings-field">
+                <label>Shop Phone</label>
+                <input type="tel" id="shopPhone" placeholder="Enter phone number" required>
+            </div>
+        </div>
+
+
+        <div class="settings-field">
+
+            <label>
+                Address
+            </label>
+
+            <textarea
+                id="shopAddress"
+                placeholder="Enter complete shop address"
+                required
+            ></textarea>
+
+        </div>
+
+        <div class="settings-row">
+            <div class="settings-field">
+                <label>Latitude</label>
+                <input type="number" step="any" id="shopLatitude" placeholder="18.5204">
+            </div>
+            <div class="settings-field">
+                <label>Longitude</label>
+                <input type="number" step="any" id="shopLongitude" placeholder="73.8567">
+            </div>
+        </div>
+
+        <div class="settings-field">
+
+            <label for="shopDescription">
+                Description
+            </label>
+
+            <textarea
+                id="shopDescription"
+                placeholder="Describe your shop and services"
+            ></textarea>
+
+        </div>
+
+        <div class="settings-field">
+            <label for="shopAmenities">Amenities</label>
+            <textarea id="shopAmenities" placeholder="Parking, AC, Wi-Fi, beard wash, cashless billing"></textarea>
+        </div>
+
+
+        <div class="settings-row">
+
+            <div class="settings-field">
+
+                <label>
+                    Opening Time
+                </label>
+
+                <input
+                    type="time"
+                    id="openingTime"
+                    value="09:00"
+                    required
+                >
+
+            </div>
+
+
+            <div class="settings-field">
+
+                <label>
+                    Closing Time
+                </label>
+
+                <input
+                    type="time"
+                    id="closingTime"
+                    value="21:00"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="submit"
+            class="barber-action"
+            id="saveShopBtn">
+
+            Create Shop
+
+        </button>
+
+
+    </form>
+
+</div>
+
+
+<div class="barber-card shop-status-card">
+
+    <p class="barber-label">
+        SHOP STATUS
+    </p>
+
+    <h2>
+        Your Shop
+    </h2>
+
+    <div class="status-display">
+
+        <span class="status-dot"></span>
+
+        <div>
+
+            <strong id="shopStatus">
+                Loading...
+            </strong>
+
+            <p id="shopStatusMessage">
+                Loading your shop details.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="shop-info-box">
+
+        <span>
+            Opening Hours
+        </span>
+
+        <strong id="openingHoursSummary">
+            -
+        </strong>
+
+    </div>
+
+
+    <div class="shop-info-box">
+
+        <span>
+            Booking Status
+        </span>
+
+        <strong id="bookingStatusSummary">
+            -
+        </strong>
+
+    </div>
+
+</div>
+
+
+</section>
+
+</main>
+
+
+<script src="../Js/api.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", initializeShopSettings);
+
+    async function initializeShopSettings() {
+        if (!requireBarber()) {
+            return;
+        }
+
+        document.querySelector(".barber-sidebar-bottom button").addEventListener("click", () => {
+            clearAuth();
+            window.location.href = "../index.html";
+        });
+        document.getElementById("shopForm").addEventListener("submit", saveShop);
+        document.getElementById("locateShopBtn").addEventListener("click", locateShopLocation);
+
+        try {
+            const shop = await apiGet("/api/barber/shop");
+            populateShopForm(shop);
+            setShopStatus(true);
+        } catch (error) {
+            if (error.message === "Shop not found") {
+                setShopStatus(false);
+                return;
+            }
+
+            setShopStatus(false, "Unable to load shop details.");
+            showShopMessage(error.message || "Unable to load shop details.", true);
+        }
+    }
+
+    function populateShopForm(shop) {
+        document.getElementById("officialName").value = shop.official_name || shop.name || "";
+        document.getElementById("shopName").value = shop.name || "";
+        document.getElementById("shopTagline").value = shop.tagline || "";
+        document.getElementById("shopPhone").value = shop.phone || "";
+        document.getElementById("shopCity").value = shop.city || "";
+        document.getElementById("shopState").value = shop.state || "";
+        document.getElementById("shopPincode").value = shop.pincode || "";
+        document.getElementById("shopAddress").value = shop.address || "";
+        document.getElementById("shopLatitude").value = shop.latitude ?? "";
+        document.getElementById("shopLongitude").value = shop.longitude ?? "";
+        document.getElementById("shopDescription").value = shop.description || "";
+        document.getElementById("shopAmenities").value = shop.amenities || "";
+        document.getElementById("openingTime").value = shop.opening_time || "09:00";
+        document.getElementById("closingTime").value = shop.closing_time || "21:00";
+    }
+
+    function setShopStatus(exists, message) {
+        document.getElementById("shopStatus").textContent = exists ? "Active" : "Not created";
+        document.getElementById("saveShopBtn").dataset.shopExists = String(exists);
+        document.getElementById("shopStatusMessage").textContent = message || (exists
+            ? "Customers can find your shop and book appointments."
+            : "Create your shop profile to appear in customer search.");
+        document.getElementById("openingHoursSummary").textContent = exists
+            ? `${document.getElementById("openingTime").value} - ${document.getElementById("closingTime").value}`
+            : "Set your hours when creating the shop";
+        document.getElementById("bookingStatusSummary").textContent = exists
+            ? "Accepting bookings"
+            : "Unavailable until shop is created";
+        document.getElementById("saveShopBtn").textContent = exists ? "Save Changes" : "Create Shop";
+    }
+
+    async function saveShop(event) {
+        event.preventDefault();
+
+        const button = document.getElementById("saveShopBtn");
+        const payload = {
+            name: document.getElementById("shopName").value.trim(),
+            official_name: document.getElementById("officialName").value.trim() || null,
+            tagline: document.getElementById("shopTagline").value.trim() || null,
+            city: document.getElementById("shopCity").value.trim() || null,
+            state: document.getElementById("shopState").value.trim() || null,
+            pincode: document.getElementById("shopPincode").value.trim() || null,
+            phone: document.getElementById("shopPhone").value.trim() || null,
+            address: document.getElementById("shopAddress").value.trim() || null,
+            description: document.getElementById("shopDescription").value.trim() || null,
+            amenities: document.getElementById("shopAmenities").value.trim() || null,
+            latitude: document.getElementById("shopLatitude").value === "" ? null : Number(document.getElementById("shopLatitude").value),
+            longitude: document.getElementById("shopLongitude").value === "" ? null : Number(document.getElementById("shopLongitude").value),
+            opening_time: document.getElementById("openingTime").value,
+            closing_time: document.getElementById("closingTime").value,
+            profile_status: "live"
+        };
+
+        if (!payload.name || !payload.address || !payload.phone || !payload.city || !payload.state || !payload.pincode) {
+            showShopMessage("Official name, address, city, state, pincode and phone are required.", true);
+            return;
+        }
+
+        if (payload.closing_time <= payload.opening_time) {
+            showShopMessage("Closing time must be later than opening time.", true);
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Saving...";
+
+        try {
+            const method = button.dataset.shopExists === "true" ? apiPut : apiPost;
+            const shop = await method("/api/barber/shop", payload);
+            populateShopForm(shop);
+            setShopStatus(true);
+            button.dataset.shopExists = "true";
+            showShopMessage("Shop saved. Customers can now view it in Find Barber.");
+        } catch (error) {
+            showShopMessage(error.message || "Unable to save shop details.", true);
+        } finally {
+            button.disabled = false;
+            button.textContent = button.dataset.shopExists === "true" ? "Save Changes" : "Create Shop";
+        }
+    }
+
+    async function locateShopLocation() {
+        if (!navigator.geolocation) {
+            showShopMessage("Location access is not supported in this browser.", true);
+            return;
+        }
+
+        try {
+            const position = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true,
+                    timeout: 8000,
+                    maximumAge: 300000
+                });
+            });
+
+            document.getElementById("shopLatitude").value = position.coords.latitude;
+            document.getElementById("shopLongitude").value = position.coords.longitude;
+            showShopMessage("Live shop location captured successfully.");
+        } catch (error) {
+            showShopMessage("Location permission was denied. You can still save your shop manually.", true);
+        }
+    }
+
+    function showShopMessage(message, isError = false) {
+        let element = document.getElementById("shopMessage");
+        if (!element) {
+            element = document.createElement("p");
+            element.id = "shopMessage";
+            element.setAttribute("role", "status");
+            document.getElementById("shopForm").prepend(element);
+        }
+
+        element.textContent = message;
+        element.style.color = isError ? "#b91c1c" : "#15803d";
+        element.style.marginBottom = "14px";
+    }
+</script>
+
+</body>
+</html>

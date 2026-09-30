@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Queue | TrimQ</title>
+    <link rel="stylesheet" href="../css/customer.css">
+    <style>
+        .queue-list { display: grid; gap: 14px; margin-top: 20px; }
+        .queue-card { padding: 20px; border: 1px solid #e5e8f0; border-radius: 12px; background: white; }
+        .queue-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+        .queue-card h2 { font-size: 17px; }
+        .queue-state { color: #16804a; font-size: 11px; font-weight: 800; text-transform: capitalize; }
+        .queue-position { margin-top: 18px; color: #8992a4; font-size: 11px; }
+        .queue-position strong { display: block; margin-top: 3px; color: #18213a; font-size: 27px; }
+        .queue-note { margin-top: 15px; color: #778297; font-size: 11px; }
+        .page-actions { display: flex; align-items: center; gap: 12px; }
+        .refresh-button { padding: 9px 12px; border: 1px solid #dfe3ec; border-radius: 8px; background: white; color: #354052; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+        .queue-error { padding: 18px; border: 1px solid #fecaca; border-radius: 9px; background: #fef2f2; color: #991b1b; font-size: 12px; }
+        @media (max-width: 700px) { .page-actions { align-items: flex-start; flex-direction: column; } }
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="brand">✂ Trim<span>Q</span></div>
+    <p class="nav-title">CUSTOMER</p>
+    <nav>
+        <a href="dashboard.html">⌂ Dashboard</a>
+        <a href="barber-list.html">✂ Find Barber</a>
+        <a href="my-bookings.html">▣ My Bookings</a>
+        <a href="booking.html">＋ New Booking</a>
+        <a href="queue.html" class="active">◷ Live Queue</a>
+        <a href="notifications.html">♢ Notifications</a>
+    </nav>
+    <div class="sidebar-bottom">
+        <a href="../index.html">← Back to Home</a>
+        <button type="button" data-logout>↪ Logout</button>
+    </div>
+</aside>
+<main class="main">
+    <header class="topbar">
+        <div>
+            <p class="page-label">YOUR VISITS</p>
+            <h1>Live Queue</h1>
+            <p class="subtitle">Track your active place in line.</p>
+        </div>
+        <div class="page-actions">
+            <span class="subtitle" id="lastUpdated"></span>
+            <button class="refresh-button" id="refreshQueue" type="button">Refresh</button>
+        </div>
+    </header>
+    <section class="content-card">
+        <div id="queueContainer" class="queue-list" aria-live="polite">
+            <div class="empty-state"><h3>Loading queue</h3></div>
+        </div>
+    </section>
+</main>
+<script src="../Js/api.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", initializeQueuePage);
+
+    async function initializeQueuePage() {
+        if (!requireCustomer()) return;
+        document.querySelector("[data-logout]").addEventListener("click", () => {
+            clearAuth();
+            window.location.href = "../index.html";
+        });
+        document.getElementById("refreshQueue").addEventListener("click", loadCustomerQueue);
+        await loadCustomerQueue();
+        window.setInterval(() => {
+            if (!document.hidden) loadCustomerQueue();
+        }, 20000);
+    }
+
+    async function loadCustomerQueue() {
+        const container = document.getElementById("queueContainer");
+        try {
+            const response = await apiGet("/api/queue/customer/my");
+            renderQueue(Array.isArray(response?.queue) ? response.queue : []);
+            document.getElementById("lastUpdated").textContent =
+                `Updated ${new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+        } catch (error) {
+            container.innerHTML = `<div class="queue-error">${escapeText(error.message || "Unable to load your queue.")}</div>`;
+        }
+    }
+
+    function renderQueue(entries) {
+        const container = document.getElementById("queueContainer");
+        if (entries.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div>◷</div>
+                    <h3>No active queue entries</h3>
+                    <p>Book an appointment to see your place in line here.</p>
+                    <a class="primary-btn" href="barber-list.html">Find a Barber</a>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = entries.map(entry => `
+            <article class="queue-card">
+                <div class="queue-card-top">
+                    <h2>${escapeText(entry.shop_name || "Barber Shop")}</h2>
+                    <span class="queue-state">${escapeText(entry.status || "waiting")}</span>
+                </div>
+                <div class="queue-position">Queue position<strong>#${Number(entry.position) || "-"}</strong></div>
+                <p class="queue-note">Your queue position updates automatically while this page is open.</p>
+            </article>
+        `).join("");
+    }
+
+    function escapeText(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+</script>
+</body>
+</html>

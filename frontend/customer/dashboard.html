@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TrimQ | Customer Dashboard</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/customer.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: #f5f7fb;
+            color: #111827;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 250px;
+            background: #111827;
+            color: white;
+            padding: 24px 16px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+            padding: 0 14px 30px;
+        }
+
+        .logo span {
+            color: #3b82f6;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 14px;
+            margin-bottom: 10px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #d1d5db;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 9px;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: #1f2937;
+            color: white;
+        }
+
+        .nav a.active {
+            border-left: 3px solid #3b82f6;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 24px;
+            left: 16px;
+            right: 16px;
+        }
+
+        .logout button {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #374151;
+            background: transparent;
+            color: #d1d5db;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .logout button:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 28px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .welcome h1 {
+            margin: 0 0 6px;
+            font-size: 28px;
+        }
+
+        .welcome p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .profile-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 8px 13px;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .profile-name {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .profile-role {
+            color: #6b7280;
+            font-size: 11px;
+        }
+
+        /* STATS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            margin-top: 8px;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .stat-note {
+            margin-top: 5px;
+            color: #9ca3af;
+            font-size: 12px;
+        }
+
+        /* CONTENT */
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #eef0f3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 17px;
+        }
+
+        .card-header a {
+            text-decoration: none;
+            color: #2563eb;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* BOOKING */
+
+        .booking-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #eef0f3;
+        }
+
+        .booking-item:last-child {
+            border-bottom: none;
+        }
+
+        .booking-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .booking-shop {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .booking-service {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .booking-meta {
+            display: flex;
+            gap: 14px;
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .status {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 8px;
+            border-radius: 20px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            text-transform: capitalize;
+        }
+
+        .status.completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status.cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* SHOPS */
+
+        .shop-item {
+            padding: 14px 0;
+            border-bottom: 1px solid #eef0f3;
+        }
+
+        .shop-item:last-child {
+            border-bottom: none;
+        }
+
+        .shop-name {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .shop-address {
+            color: #6b7280;
+            font-size: 12px;
+            margin: 5px 0 10px;
+        }
+
+        .shop-btn {
+            display: inline-block;
+            padding: 7px 11px;
+            background: #2563eb;
+            color: white;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* EMPTY / LOADING */
+
+        .empty {
+            text-align: center;
+            padding: 30px 10px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .error {
+            color: #b91c1c;
+            background: #fee2e2;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        /* MOBILE */
+
+        .mobile-menu {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: 0.25s;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 18px;
+            }
+
+            .mobile-menu {
+                display: block;
+                border: none;
+                background: #111827;
+                color: white;
+                padding: 9px 12px;
+                border-radius: 8px;
+                cursor: pointer;
+                margin-bottom: 15px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .profile-badge {
+                display: none;
+            }
+
+            .welcome h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="logo">
+            Trim<span>Q</span>
+        </div>
+
+        <div class="nav-title">Customer</div>
+
+        <nav class="nav">
+
+            <a href="dashboard.html" class="active">
+                🏠 Dashboard
+            </a>
+
+            <a href="barber-list.html">
+                💈 Find Barber
+            </a>
+
+            <a href="my-bookings.html">
+                📅 My Bookings
+            </a>
+
+            <a href="booking.html">
+                ➕ New Booking
+            </a>
+
+            <a href="queue.html">
+                🔴 Live Queue
+            </a>
+
+            <a href="notifications.html">
+                🔔 Notifications
+            </a>
+
+            <a href="#">
+                👤 Profile
+            </a>
+
+        </nav>
+
+        <div class="logout">
+            <button type="button" data-logout>
+                🚪 Logout
+            </button>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <button class="mobile-menu" id="mobileMenu">
+            ☰ Menu
+        </button>
+
+        <header class="topbar">
+
+            <div class="welcome">
+                <h1 id="welcomeTitle">Welcome back 👋</h1>
+                <p>Manage your barber bookings from one place.</p>
+            </div>
+
+            <div class="profile-badge">
+
+                <div class="avatar" id="avatar">
+                    C
+                </div>
+
+                <div>
+                    <div class="profile-name" id="profileName">
+                        Customer
+                    </div>
+
+                    <div class="profile-role">
+                        Customer
+                    </div>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- STATS -->
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <div class="stat-label">Total Bookings</div>
+
+                <div class="stat-value" id="totalBookings">
+                    —
+                </div>
+
+                <div class="stat-note">
+                    Your booking history
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-label">Active Bookings</div>
+
+                <div class="stat-value" id="activeBookings">
+                    —
+                </div>
+
+                <div class="stat-note">
+                    Upcoming appointments
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-label">Available Shops</div>
+
+                <div class="stat-value" id="shopCount">
+                    —
+                </div>
+
+                <div class="stat-note">
+                    Shops available on TrimQ
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- CONTENT -->
+
+        <section class="content-grid">
+
+            <!-- RECENT BOOKINGS -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2>Recent Bookings</h2>
+
+                    <a href="my-bookings.html">
+                        View all →
+                    </a>
+
+                </div>
+
+                <div class="card-body" id="bookingsContainer">
+
+                    <div class="loading">
+                        Loading bookings...
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SHOPS -->
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <h2>Available Shops</h2>
+
+                    <a href="barber-list.html">
+                        View all →
+                    </a>
+
+                </div>
+
+                <div class="card-body" id="shopsContainer">
+
+                    <div class="loading">
+                        Loading shops...
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- API -->
+
+<script src="../Js/api.js"></script>
+
+<script>
+
+    // ========================================
+    // Customer Dashboard
+    // ========================================
+
+    document.addEventListener("DOMContentLoaded", async () => {
+
+        if (!requireCustomer()) {
+            return;
+        }
+
+        loadUserInfo();
+        loadDashboard();
+        setupMobileMenu();
+
+    });
+
+
+    // ========================================
+    // USER
+    // ========================================
+
+    function loadUserInfo() {
+
+        const user = getCurrentUser();
+
+        if (!user) return;
+
+        const name = user.name || "Customer";
+
+        document.getElementById("profileName").textContent = name;
+
+        document.getElementById("welcomeTitle").textContent =
+            `Welcome back, ${name.split(" ")[0]} 👋`;
+
+        const firstLetter =
+            name.charAt(0).toUpperCase();
+
+        document.getElementById("avatar").textContent =
+            firstLetter;
+    }
+
+
+    // ========================================
+    // DASHBOARD
+    // ========================================
+
+    async function loadDashboard() {
+
+        try {
+
+            const [bookings, shops] = await Promise.all([
+                apiGet("/api/customer/bookings"),
+                apiGet("/api/customer/shops")
+            ]);
+
+            renderBookings(bookings);
+            renderShops(shops);
+
+            updateStats(bookings, shops);
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("bookingsContainer").innerHTML = `
+                <div class="error">
+                    Unable to load dashboard data.
+                    ${escapeHtml(error.message)}
+                </div>
+            `;
+
+            document.getElementById("shopsContainer").innerHTML = `
+                <div class="error">
+                    Unable to load shops.
+                    ${escapeHtml(error.message)}
+                </div>
+            `;
+        }
+
+    }
+
+
+    // ========================================
+    // STATS
+    // ========================================
+
+    function updateStats(bookings, shops) {
+
+        const bookingList =
+            Array.isArray(bookings)
+                ? bookings
+                : [];
+
+        const shopList =
+            Array.isArray(shops)
+                ? shops
+                : [];
+
+        const active = bookingList.filter(booking => {
+
+            const status =
+                String(booking.status || "").toLowerCase();
+
+            return ![
+                "completed",
+                "cancelled"
+            ].includes(status);
+
+        });
+
+        document.getElementById("totalBookings").textContent =
+            bookingList.length;
+
+        document.getElementById("activeBookings").textContent =
+            active.length;
+
+        document.getElementById("shopCount").textContent =
+            shopList.length;
+    }
+
+
+    // ========================================
+    // BOOKINGS
+    // ========================================
+
+    function renderBookings(bookings) {
+
+        const container =
+            document.getElementById("bookingsContainer");
+
+        if (!Array.isArray(bookings) || bookings.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No bookings yet.<br><br>
+                    Find a barber and make your first booking.
+                </div>
+            `;
+
+            return;
+        }
+
+        const recent =
+            [...bookings]
+                .sort((a, b) => Number(b.id) - Number(a.id))
+                .slice(0, 5);
+
+        container.innerHTML =
+            recent.map(booking => {
+
+                const status =
+                    String(booking.status || "booked");
+
+                return `
+                    <div class="booking-item">
+
+                        <div class="booking-top">
+
+                            <div>
+                                <div class="booking-shop">
+                                    Shop #${escapeHtml(booking.shop_id)}
+                                </div>
+
+                                <div class="booking-service">
+                                    Service #${escapeHtml(booking.service_id)}
+                                </div>
+                            </div>
+
+                            <span class="status ${status.toLowerCase()}">
+                                ${escapeHtml(status)}
+                            </span>
+
+                        </div>
+
+                        <div class="booking-meta">
+
+                            <span>
+                                📅 ${escapeHtml(booking.booking_date)}
+                            </span>
+
+                            <span>
+                                🕐 ${escapeHtml(booking.slot_time)}
+                            </span>
+
+                        </div>
+
+                    </div>
+                `;
+
+            }).join("");
+    }
+
+
+    // ========================================
+    // SHOPS
+    // ========================================
+
+    function renderShops(shops) {
+
+        const container =
+            document.getElementById("shopsContainer");
+
+        if (!Array.isArray(shops) || shops.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No barber shops available.
+                </div>
+            `;
+
+            return;
+        }
+
+        const visibleShops =
+            shops.slice(0, 5);
+
+        container.innerHTML =
+            visibleShops.map(shop => {
+
+                return `
+                    <div class="shop-item">
+
+                        <div class="shop-name">
+                            ${escapeHtml(shop.name || "Barber Shop")}
+                        </div>
+
+                        <div class="shop-address">
+                            📍 ${escapeHtml(shop.address || "Address not available")}
+                        </div>
+
+                        <a
+                            class="shop-btn"
+                            href="barber-profile.html?id=${encodeURIComponent(shop.id)}"
+                        >
+                            View Shop
+                        </a>
+
+                    </div>
+                `;
+
+            }).join("");
+    }
+
+
+    // ========================================
+    // MOBILE MENU
+    // ========================================
+
+    function setupMobileMenu() {
+
+        const button =
+            document.getElementById("mobileMenu");
+
+        const sidebar =
+            document.getElementById("sidebar");
+
+        button.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
+
+    }
+
+
+    // ========================================
+    // SECURITY
+    // ========================================
+
+    function escapeHtml(value) {
+
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,916 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f5f7ff;
+    color: #18213a;
+}
+
+/* ================= SIDEBAR ================= */
+
+.barber-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh;
+    padding: 28px 18px;
+    background: #11162c;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.barber-brand {
+    padding: 5px 15px 35px;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.barber-brand span {
+    color: #8b7cff;
+}
+
+.barber-nav-title {
+    padding: 0 15px;
+    margin-bottom: 10px;
+    color: #69728c;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.barber-sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.barber-sidebar nav a,
+.barber-sidebar-bottom a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 15px;
+    border-radius: 9px;
+    color: #9ba4bb;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    transition: .2s;
+}
+
+.barber-sidebar nav a:hover,
+.barber-sidebar nav a.active {
+    background: #6257ee;
+    color: white;
+}
+
+.barber-sidebar-bottom {
+    margin-top: auto;
+}
+
+.barber-sidebar-bottom button {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #303750;
+    border-radius: 9px;
+    background: transparent;
+    color: #9ba4bb;
+    text-align: left;
+    cursor: pointer;
+}
+
+/* ================= MAIN ================= */
+
+.barber-main {
+    margin-left: 250px;
+    min-height: 100vh;
+    padding: 38px 45px;
+}
+
+.barber-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+}
+
+.barber-label {
+    color: #685df3;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+}
+
+.barber-topbar h1 {
+    margin-top: 6px;
+    font-size: 30px;
+}
+
+.barber-topbar p:last-child {
+    margin-top: 7px;
+    color: #7c879d;
+    font-size: 12px;
+}
+
+.barber-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#786cff,#564bdc);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+/* ================= HERO ================= */
+
+.barber-hero {
+    padding: 35px 40px;
+    min-height: 220px;
+    border-radius: 20px;
+    background:
+        radial-gradient(
+            circle at 85% 15%,
+            rgba(139,124,255,.3),
+            transparent 30%
+        ),
+        linear-gradient(135deg,#191e3a,#2b315d);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.barber-hero span {
+    color: #aaa3ff;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+}
+
+.barber-hero h2 {
+    margin: 13px 0 8px;
+    font-size: 30px;
+}
+
+.barber-hero p {
+    color: #b9c0d2;
+    font-size: 12px;
+}
+
+.barber-hero-icon {
+    margin-right: 50px;
+    font-size: 100px;
+    opacity: .1;
+}
+
+.barber-hero .hero-btn {
+    display: inline-flex;
+    margin-top: 18px;
+    padding: 10px 14px;
+    border-radius: 7px;
+    background: #6a5ff0;
+    color: white;
+    font-size: 11px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+/* ================= STATS ================= */
+
+.barber-stats {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 18px;
+    margin: 22px 0;
+}
+
+.barber-stat {
+    display: block;
+    padding: 20px;
+    background: white;
+    border: 1px solid #e6e9f1;
+    border-radius: 14px;
+    color: inherit;
+    text-decoration: none;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.barber-stat:hover {
+    transform: translateY(-2px);
+    border-color: #c7c2ff;
+    box-shadow: 0 10px 24px rgba(31, 37, 66, .08);
+}
+
+.barber-stat-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.barber-stat-icon.purple {
+    background: #eeebff;
+    color: #6257ee;
+}
+
+.barber-stat-icon.orange {
+    background: #fff1df;
+    color: #e58a24;
+}
+
+.barber-stat-icon.green {
+    background: #e5f8ee;
+    color: #22a56b;
+}
+
+.barber-stat-icon.blue {
+    background: #e6f2ff;
+    color: #3986d8;
+}
+
+.barber-stat p {
+    color: #8992a4;
+    font-size: 10px;
+}
+
+.barber-stat h3 {
+    margin-top: 5px;
+    font-size: 24px;
+}
+
+.dashboard-items {
+    margin-top: 14px;
+}
+
+.dashboard-appointment {
+    display: grid;
+    grid-template-columns: 66px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.appointment-time {
+    color: #6257ee;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.appointment-person strong,
+.appointment-person span {
+    display: block;
+}
+
+.appointment-person strong {
+    font-size: 11px;
+}
+
+.appointment-person span {
+    margin-top: 3px;
+    color: #8992a4;
+    font-size: 10px;
+}
+
+.dashboard-status {
+    padding: 5px 8px;
+    border-radius: 20px;
+    background: #f0eeff;
+    color: #6257ee;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: capitalize;
+}
+
+.dashboard-error {
+    padding: 14px;
+    border: 1px solid #fecaca;
+    border-radius: 9px;
+    background: #fef2f2;
+    color: #991b1b;
+    font-size: 11px;
+}
+
+.dashboard-error a {
+    display: inline-block;
+    margin-top: 8px;
+    color: #5146d9;
+    font-weight: 800;
+}
+
+/* ================= DASHBOARD GRID ================= */
+
+.barber-dashboard-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 20px;
+}
+
+.barber-card {
+    padding: 24px;
+    background: white;
+    border: 1px solid #e6e9f1;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.barber-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.barber-card-header h2 {
+    margin-top: 5px;
+    font-size: 18px;
+}
+
+.barber-card-header a {
+    color: #6257ee;
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.empty-state {
+    padding: 55px 20px;
+    text-align: center;
+}
+
+.empty-state > div,
+.queue-empty-icon {
+    width: 55px;
+    height: 55px;
+    margin: 0 auto 14px;
+    border-radius: 15px;
+    background: #f0eeff;
+    color: #6257ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+
+.empty-state h3 {
+    font-size: 14px;
+}
+
+.empty-state p {
+    margin-top: 6px;
+    color: #8992a4;
+    font-size: 10px;
+}
+
+.queue-empty {
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 12px;
+    background: #f8f9fc;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.queue-number {
+    width: 58px;
+    height: 58px;
+    border-radius: 13px;
+    background: #eeebff;
+    color: #6257ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.queue-empty h3 {
+    font-size: 13px;
+}
+
+.queue-empty p {
+    margin-top: 4px;
+    color: #8992a4;
+    font-size: 10px;
+}
+
+/* ================= BUTTON ================= */
+
+.barber-action {
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    background: linear-gradient(135deg,#756aff,#5c51e5);
+    color: white;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+/* ================= TABLE ================= */
+
+.appointment-table {
+    margin-top: 22px;
+    border: 1px solid #edf0f4;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.appointment-table-header {
+    display: grid;
+    grid-template-columns: 1.5fr 1.5fr 1fr 1fr 1fr;
+    padding: 15px;
+    background: #f8f9fc;
+    color: #8992a4;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.appointment-row {
+    display: grid;
+    grid-template-columns: 1.5fr 1.5fr 1fr 1fr 1fr;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    border-top: 1px solid #edf0f4;
+    font-size: 10px;
+}
+
+.appointment-status {
+    color: #4c566c;
+    text-transform: capitalize;
+}
+
+.appointment-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.appointment-actions button {
+    padding: 6px 8px;
+    border: 1px solid #dfe3ec;
+    border-radius: 6px;
+    background: white;
+    color: #354052;
+    font-family: inherit;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.appointment-actions button:hover {
+    border-color: #8d85f5;
+}
+
+.appointment-actions button:disabled {
+    opacity: .55;
+    cursor: wait;
+}
+
+/* ================= QUEUE ================= */
+
+.queue-live {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 12px;
+    border-radius: 20px;
+    background: #e7f8ef;
+    color: #229961;
+    font-size: 9px;
+    font-weight: 900;
+}
+
+.queue-live span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #25b875;
+}
+
+.queue-overview {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.queue-overview-card {
+    padding: 22px;
+    background: white;
+    border: 1px solid #e6e9f1;
+    border-radius: 14px;
+}
+
+.queue-overview-card span {
+    color: #8992a4;
+    font-size: 9px;
+    font-weight: 800;
+}
+
+.queue-overview-card strong {
+    display: block;
+    margin: 8px 0 2px;
+    font-size: 27px;
+}
+
+.queue-overview-card p {
+    color: #8992a4;
+    font-size: 10px;
+}
+
+.barber-queue-list {
+    margin-top: 20px;
+}
+
+.barber-queue-row {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 14px;
+    padding: 15px 4px;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.queue-position {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #eeebff;
+    color: #6257ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.queue-customer strong,
+.queue-customer span {
+    display: block;
+}
+
+.queue-customer strong {
+    font-size: 12px;
+}
+
+.queue-customer span {
+    margin-top: 4px;
+    color: #8992a4;
+    font-size: 10px;
+}
+
+.queue-status {
+    padding: 6px 9px;
+    border-radius: 20px;
+    background: #fff1df;
+    color: #bb751d;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: capitalize;
+}
+
+.queue-status.serving {
+    background: #e5f8ee;
+    color: #16814f;
+}
+
+.queue-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.queue-actions button,
+.walk-in-actions > button:not(.barber-action) {
+    padding: 8px 10px;
+    border: 1px solid #dfe3ec;
+    border-radius: 7px;
+    background: white;
+    color: #354052;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.queue-actions button:hover,
+.walk-in-actions > button:not(.barber-action):hover {
+    border-color: #8d85f5;
+}
+
+.queue-actions button:disabled {
+    opacity: .55;
+    cursor: wait;
+}
+
+#queueMessage {
+    color: #9a3412;
+    font-size: 11px;
+}
+
+#queueMessage a {
+    color: #5146d9;
+    font-weight: 800;
+}
+
+.walk-in-dialog {
+    width: min(430px, calc(100% - 32px));
+    max-height: calc(100% - 32px);
+    padding: 24px;
+    border: 1px solid #e6e9f1;
+    border-radius: 13px;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, .2);
+}
+
+.walk-in-dialog::backdrop {
+    background: rgba(17, 22, 44, .55);
+}
+
+.walk-in-dialog h2 {
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.walk-in-dialog label {
+    display: block;
+    margin: 13px 0 6px;
+    color: #4c566c;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.walk-in-dialog input {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #dfe3ec;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 12px;
+}
+
+.walk-in-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 9px;
+    margin-top: 18px;
+}
+
+#walkInMessage {
+    min-height: 18px;
+    margin-top: 9px;
+    color: #b42318;
+    font-size: 11px;
+}
+
+/* ================= SERVICES ================= */
+
+.service-management-grid {
+    margin-top: 20px;
+}
+
+.management-service {
+    padding: 18px 0;
+    border-bottom: 1px solid #edf0f4;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.management-service:last-child {
+    border-bottom: none;
+}
+
+.service-symbol {
+    width: 45px;
+    height: 45px;
+    border-radius: 11px;
+    background: #f0eeff;
+    color: #6257ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.management-service-info {
+    flex: 1;
+}
+
+.management-service-info h3 {
+    font-size: 13px;
+}
+
+.management-service-info p {
+    margin-top: 4px;
+    color: #8992a4;
+    font-size: 10px;
+}
+
+.management-service-info span {
+    display: block;
+    margin-top: 6px;
+    color: #6257ee;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.management-service > strong {
+    color: #18213a;
+    font-size: 14px;
+}
+
+/* ================= SETTINGS ================= */
+
+.settings-layout {
+    display: grid;
+    grid-template-columns: 1.3fr .7fr;
+    gap: 20px;
+}
+
+.settings-form {
+    margin-top: 22px;
+}
+
+.settings-field {
+    margin-bottom: 17px;
+}
+
+.settings-field label {
+    display: block;
+    margin-bottom: 7px;
+    color: #4c566c;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.settings-field input,
+.settings-field textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dfe3ec;
+    border-radius: 8px;
+    background: #fbfcff;
+    outline: none;
+    font-family: inherit;
+    font-size: 11px;
+}
+
+.settings-field textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.settings-field input:focus,
+.settings-field textarea:focus {
+    border-color: #6d62f4;
+    box-shadow: 0 0 0 3px rgba(109,98,244,.08);
+}
+
+.settings-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.status-display {
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 11px;
+    background: #eaf9f1;
+    display: flex;
+    gap: 12px;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    margin-top: 4px;
+    border-radius: 50%;
+    background: #20a66b;
+}
+
+.status-display strong {
+    color: #20885c;
+    font-size: 12px;
+}
+
+.status-display p {
+    margin-top: 4px;
+    color: #729382;
+    font-size: 10px;
+}
+
+.shop-info-box {
+    margin-top: 12px;
+    padding: 14px;
+    border: 1px solid #edf0f4;
+    border-radius: 9px;
+}
+
+.shop-info-box span {
+    display: block;
+    color: #8992a4;
+    font-size: 9px;
+}
+
+.shop-info-box strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1050px) {
+
+    .barber-sidebar {
+        width: 210px;
+    }
+
+    .barber-main {
+        margin-left: 210px;
+        padding: 28px;
+    }
+
+    .barber-stats {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    .barber-dashboard-grid,
+    .settings-layout {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 700px) {
+
+    .barber-sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+    }
+
+    .barber-sidebar nav {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .barber-sidebar-bottom {
+        margin-top: 15px;
+    }
+
+    .barber-main {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .barber-stats,
+    .queue-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .barber-queue-row {
+        grid-template-columns: 42px minmax(0, 1fr) auto;
+    }
+
+    .queue-actions {
+        grid-column: 2 / -1;
+    }
+
+    .dashboard-appointment {
+        grid-template-columns: 56px minmax(0, 1fr);
+    }
+
+    .dashboard-status {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    .barber-hero-icon {
+        display: none;
+    }
+
+    .barber-hero {
+        padding: 28px;
+    }
+
+    .settings-row {
+        grid-template-columns: 1fr;
+    }
+
+}

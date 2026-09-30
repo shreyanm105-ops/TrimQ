@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Services - TrimQ</title>
+
+<link rel="stylesheet"
+      href="../css/barber.css">
+
+<style>
+    .service-management-grid .state {
+        padding: 24px 0;
+        color: #8992a4;
+        font-size: 12px;
+    }
+
+    .service-tools {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .service-count {
+        color: #8992a4;
+        font-size: 11px;
+    }
+
+    .service-row-actions {
+        display: flex;
+        gap: 8px;
+        margin-left: 10px;
+    }
+
+    .service-row-actions button,
+    .dialog-actions button {
+        padding: 8px 11px;
+        border: 1px solid #dfe3ec;
+        border-radius: 7px;
+        background: white;
+        color: #354052;
+        font: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .service-row-actions button:hover,
+    .dialog-actions button:hover {
+        border-color: #8d85f5;
+    }
+
+    .service-row-actions .deactivate-service {
+        color: #b42318;
+    }
+
+    .management-service.inactive {
+        opacity: .65;
+    }
+
+    .service-dialog {
+        width: min(480px, calc(100% - 32px));
+        max-height: calc(100% - 32px);
+        padding: 24px;
+        border: 1px solid #e6e9f1;
+        border-radius: 12px;
+        box-shadow: 0 24px 70px rgba(15, 23, 42, .2);
+    }
+
+    .service-dialog::backdrop {
+        background: rgba(17, 22, 44, .55);
+    }
+
+    .service-dialog h2 {
+        margin-bottom: 18px;
+        font-size: 19px;
+    }
+
+    .service-dialog .settings-field input,
+    .service-dialog .settings-field textarea {
+        font-size: 13px;
+    }
+
+    .service-active-field {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 4px 0 18px;
+        color: #4c566c;
+        font-size: 12px;
+    }
+
+    .dialog-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 9px;
+    }
+
+    .dialog-actions .barber-action {
+        border: 0;
+        color: white;
+    }
+
+    #serviceFormMessage {
+        min-height: 18px;
+        margin-bottom: 12px;
+        color: #b42318;
+        font-size: 12px;
+    }
+
+    .shop-required {
+        padding: 18px;
+        border: 1px solid #f2d38a;
+        border-radius: 9px;
+        background: #fff8e8;
+        color: #694b0b;
+        font-size: 12px;
+    }
+
+    .shop-required a {
+        display: inline-block;
+        margin-top: 10px;
+        color: #4f46e5;
+        font-weight: 700;
+    }
+
+    @media (max-width: 600px) {
+        .barber-card-header {
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .management-service {
+            flex-wrap: wrap;
+        }
+
+        .service-row-actions {
+            width: 100%;
+            margin-left: 60px;
+        }
+    }
+</style>
+
+</head>
+
+<body>
+
+<aside class="barber-sidebar">
+
+    <div class="barber-brand">
+        <span>✂</span> TrimQ
+    </div>
+
+    <p class="barber-nav-title">
+        BARBER PANEL
+    </p>
+
+    <nav>
+
+        <a href="dashboard.html">
+            ⌂ Dashboard
+        </a>
+
+        <a href="appointments.html">
+            ▣ Appointments
+        </a>
+
+        <a href="queue.html">
+            ◷ Live Queue
+        </a>
+
+        <a href="services.html" class="active">
+            ✂ Services
+        </a>
+
+        <a href="shop-settings.html">
+            ⚙ Shop Settings
+        </a>
+
+    </nav>
+
+    <div class="barber-sidebar-bottom">
+
+        <a href="../index.html">
+            ← Back to Home
+        </a>
+
+        <button onclick="logout()">
+            ↪ Logout
+        </button>
+
+    </div>
+
+</aside>
+
+
+<main class="barber-main">
+
+<header class="barber-topbar">
+
+    <div>
+
+        <p class="barber-label">
+            SHOP MANAGEMENT
+        </p>
+
+        <h1>
+            Services
+        </h1>
+
+        <p>
+            Manage services, pricing and duration.
+        </p>
+
+    </div>
+
+</header>
+
+
+<section class="barber-card">
+
+    <div class="barber-card-header">
+
+        <div>
+
+            <p class="barber-label">
+                YOUR SERVICES
+            </p>
+
+            <h2>
+                Service Menu
+            </h2>
+
+        </div>
+
+        <div class="service-tools">
+            <span class="service-count" id="serviceCount"></span>
+            <button class="barber-action" id="addServiceBtn" type="button" disabled>
+            + Add Service
+            </button>
+        </div>
+
+    </div>
+
+
+    <div class="service-management-grid" id="servicesList">
+        <div class="state">Loading services...</div>
+    </div>
+
+</section>
+
+<dialog class="service-dialog" id="serviceDialog">
+    <form id="serviceForm">
+        <h2 id="serviceDialogTitle">Add Service</h2>
+
+        <div class="settings-field">
+            <label for="serviceName">Service Name</label>
+            <input id="serviceName" name="name" maxlength="120" required>
+        </div>
+
+        <div class="settings-field">
+            <label for="serviceDescription">Description</label>
+            <textarea id="serviceDescription" name="description" rows="3"></textarea>
+        </div>
+
+        <div class="settings-row">
+            <div class="settings-field">
+                <label for="servicePrice">Price (₹)</label>
+                <input id="servicePrice" name="price" type="number" min="0" step="1" value="0" required>
+            </div>
+            <div class="settings-field">
+                <label for="serviceDuration">Duration (minutes)</label>
+                <input id="serviceDuration" name="duration_minutes" type="number" min="1" step="1" value="30" required>
+            </div>
+        </div>
+
+        <label class="service-active-field">
+            <input id="serviceActive" type="checkbox" checked>
+            Available to customers
+        </label>
+
+        <p id="serviceFormMessage" role="status"></p>
+
+        <div class="dialog-actions">
+            <button type="button" id="cancelServiceBtn">Cancel</button>
+            <button class="barber-action" type="submit" id="saveServiceBtn">Save Service</button>
+        </div>
+    </form>
+</dialog>
+
+</main>
+
+
+<script src="../Js/api.js"></script>
+<script>
+    let serviceShopExists = false;
+    let editingServiceId = null;
+    let barberServices = [];
+
+    document.addEventListener("DOMContentLoaded", initializeServicesPage);
+
+    async function initializeServicesPage() {
+        if (!requireBarber()) return;
+
+        document.querySelector(".barber-sidebar-bottom button").addEventListener("click", () => {
+            clearAuth();
+            window.location.href = "../index.html";
+        });
+        document.getElementById("addServiceBtn").addEventListener("click", openNewServiceDialog);
+        document.getElementById("cancelServiceBtn").addEventListener("click", () => {
+            document.getElementById("serviceDialog").close();
+        });
+        document.getElementById("serviceForm").addEventListener("submit", saveService);
+        document.getElementById("servicesList").addEventListener("click", handleServiceAction);
+
+        await loadBarberServices();
+    }
+
+    async function loadBarberServices() {
+        const servicesList = document.getElementById("servicesList");
+        servicesList.innerHTML = '<div class="state">Loading services...</div>';
+
+        try {
+            await apiGet("/api/barber/shop");
+            serviceShopExists = true;
+            document.getElementById("addServiceBtn").disabled = false;
+
+            const response = await apiGet("/api/barber/services");
+            barberServices = Array.isArray(response) ? response : [];
+            renderServices();
+        } catch (error) {
+            if (error.message === "Shop not found") {
+                serviceShopExists = false;
+                document.getElementById("addServiceBtn").disabled = true;
+                document.getElementById("serviceCount").textContent = "";
+                servicesList.innerHTML = `
+                    <div class="shop-required">
+                        Create your shop profile before adding services. Your services will appear to customers after you save them.
+                        <br>
+                        <a href="shop-settings.html">Create your shop</a>
+                    </div>
+                `;
+                return;
+            }
+
+            servicesList.innerHTML = `<div class="state">${escapeHtml(error.message || "Unable to load services.")}</div>`;
+        }
+    }
+
+    function renderServices() {
+        const servicesList = document.getElementById("servicesList");
+        document.getElementById("serviceCount").textContent =
+            `${barberServices.length} service${barberServices.length === 1 ? "" : "s"}`;
+
+        if (barberServices.length === 0) {
+            servicesList.innerHTML = '<div class="state">No services yet. Add your first service to show it to customers.</div>';
+            return;
+        }
+
+        servicesList.innerHTML = barberServices.map(service => `
+            <article class="management-service ${service.is_active ? "" : "inactive"}">
+                <div class="service-symbol">✂</div>
+                <div class="management-service-info">
+                    <h3>${escapeHtml(service.name)}</h3>
+                    <p>${escapeHtml(service.description || "No description")}</p>
+                    <span>${Number(service.duration_minutes)} minutes${service.is_active ? "" : " · Inactive"}</span>
+                </div>
+                <strong>₹${Number(service.price)}</strong>
+                <div class="service-row-actions">
+                    <button type="button" data-action="edit" data-service-id="${Number(service.id)}">Edit</button>
+                    ${service.is_active
+                        ? `<button class="deactivate-service" type="button" data-action="deactivate" data-service-id="${Number(service.id)}">Deactivate</button>`
+                        : `<button type="button" data-action="activate" data-service-id="${Number(service.id)}">Activate</button>`}
+                </div>
+            </article>
+        `).join("");
+    }
+
+    function openNewServiceDialog() {
+        editingServiceId = null;
+        document.getElementById("serviceForm").reset();
+        document.getElementById("serviceActive").checked = true;
+        document.getElementById("serviceDialogTitle").textContent = "Add Service";
+        document.getElementById("saveServiceBtn").textContent = "Save Service";
+        document.getElementById("serviceFormMessage").textContent = "";
+        document.getElementById("serviceDialog").showModal();
+    }
+
+    function openEditServiceDialog(service) {
+        editingServiceId = service.id;
+        document.getElementById("serviceName").value = service.name || "";
+        document.getElementById("serviceDescription").value = service.description || "";
+        document.getElementById("servicePrice").value = service.price ?? 0;
+        document.getElementById("serviceDuration").value = service.duration_minutes ?? 30;
+        document.getElementById("serviceActive").checked = service.is_active !== false;
+        document.getElementById("serviceDialogTitle").textContent = "Edit Service";
+        document.getElementById("saveServiceBtn").textContent = "Save Changes";
+        document.getElementById("serviceFormMessage").textContent = "";
+        document.getElementById("serviceDialog").showModal();
+    }
+
+    async function saveService(event) {
+        event.preventDefault();
+
+        if (!serviceShopExists) {
+            document.getElementById("serviceFormMessage").textContent = "Create your shop before adding services.";
+            return;
+        }
+
+        const payload = {
+            name: document.getElementById("serviceName").value.trim(),
+            description: document.getElementById("serviceDescription").value.trim() || null,
+            price: Number(document.getElementById("servicePrice").value),
+            duration_minutes: Number(document.getElementById("serviceDuration").value),
+            is_active: document.getElementById("serviceActive").checked
+        };
+        const button = document.getElementById("saveServiceBtn");
+        button.disabled = true;
+        button.textContent = "Saving...";
+
+        try {
+            if (editingServiceId === null) {
+                await apiPost("/api/barber/services", payload);
+            } else {
+                await apiPut(`/api/barber/services/${encodeURIComponent(editingServiceId)}`, payload);
+            }
+
+            document.getElementById("serviceDialog").close();
+            await loadBarberServices();
+        } catch (error) {
+            document.getElementById("serviceFormMessage").textContent = error.message || "Unable to save service.";
+        } finally {
+            button.disabled = false;
+            button.textContent = editingServiceId === null ? "Save Service" : "Save Changes";
+        }
+    }
+
+    async function handleServiceAction(event) {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+
+        const serviceId = Number(button.dataset.serviceId);
+        const service = barberServices.find(item => Number(item.id) === serviceId);
+        if (!service) return;
+
+        try {
+            if (button.dataset.action === "edit") {
+                openEditServiceDialog(service);
+            } else if (button.dataset.action === "deactivate") {
+                await apiDelete(`/api/barber/services/${encodeURIComponent(serviceId)}`);
+                await loadBarberServices();
+            } else if (button.dataset.action === "activate") {
+                await apiPatch(`/api/barber/services/${encodeURIComponent(serviceId)}/activate`);
+                await loadBarberServices();
+            }
+        } catch (error) {
+            document.getElementById("servicesList").insertAdjacentHTML(
+                "afterbegin",
+                `<div class="state">${escapeHtml(error.message || "Unable to update service.")}</div>`
+            );
+        }
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+</script>
+
+</body>
+</html>

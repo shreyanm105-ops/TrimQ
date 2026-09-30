@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>My Bookings - TrimQ</title>
+
+    <link rel="stylesheet" href="../css/customer.css">
+
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="brand">
+        <span>✂</span> TrimQ
+    </div>
+
+    <p class="nav-title">CUSTOMER</p>
+
+    <nav>
+
+        <a href="dashboard.html">
+            ⌂ Dashboard
+        </a>
+
+        <a href="barber-list.html">
+            ✂ Find Barber
+        </a>
+
+        <a href="my-bookings.html" class="active">
+            ▣ My Bookings
+        </a>
+
+        <a href="booking.html">
+            ＋ New Booking
+        </a>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+
+        <a href="../index.html">
+            ← Back to Home
+        </a>
+
+        <button onclick="logout()">
+            ↪ Logout
+        </button>
+
+    </div>
+
+</aside>
+
+
+<main class="main">
+
+<header class="topbar">
+
+    <div>
+
+        <p class="page-label">
+            APPOINTMENTS
+        </p>
+
+        <h1>My Bookings</h1>
+
+        <p class="subtitle">
+            View and manage all your barber appointments.
+        </p>
+
+    </div>
+
+</header>
+
+
+<section class="content-card">
+
+    <div class="section-header">
+
+        <div>
+
+            <p class="section-label">
+                YOUR APPOINTMENTS
+            </p>
+
+            <h2>
+                Booking History
+            </h2>
+
+        </div>
+
+        <a href="booking.html"
+           class="primary-btn">
+
+            + New Booking
+
+        </a>
+
+    </div>
+
+
+    <div class="booking-table" id="bookingTable">
+
+        <div class="booking-row booking-header">
+
+            <span>Barber</span>
+            <span>Service</span>
+            <span>Date</span>
+            <span>Time</span>
+            <span>Status</span>
+
+        </div>
+
+
+        <div id="bookingsContainer" class="empty-bookings">
+            Loading your bookings...
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<script src="../Js/api.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", loadCustomerBookings);
+
+    async function loadCustomerBookings() {
+        if (!requireCustomer()) return;
+
+        document.querySelector(".sidebar-bottom button").addEventListener("click", () => {
+            clearAuth();
+            window.location.href = "../index.html";
+        });
+
+        try {
+            const bookings = await apiGet("/api/customer/bookings");
+            renderCustomerBookings(Array.isArray(bookings) ? bookings : []);
+        } catch (error) {
+            const container = document.getElementById("bookingsContainer");
+            container.className = "empty-bookings";
+            container.textContent = error.message || "Unable to load your bookings.";
+        }
+    }
+
+    function renderCustomerBookings(bookings) {
+        const container = document.getElementById("bookingsContainer");
+
+        if (bookings.length === 0) {
+            container.className = "empty-bookings";
+            container.innerHTML = `
+                <div class="empty-icon">▣</div>
+                <h3>No bookings yet</h3>
+                <p>Your appointments will appear here after you book.</p>
+                <a href="barber-list.html" class="primary-btn">Find a Barber</a>
+            `;
+            return;
+        }
+
+        container.className = "booking-list";
+        container.innerHTML = bookings.map(booking => {
+            const status = String(booking.status || "booked");
+            const statusClass = status.toLowerCase().replace(/[^a-z0-9_-]/g, "");
+            return `
+                <div class="booking-row">
+                    <span>${escapeBookingText(booking.shop_name || "Barber Shop")}</span>
+                    <span>${escapeBookingText(booking.service_name || "Service")}</span>
+                    <span>${escapeBookingText(formatBookingDate(booking.booking_date))}</span>
+                    <span>${escapeBookingText(formatBookingTime(booking.slot_time))}</span>
+                    <span class="booking-status ${statusClass}">${escapeBookingText(status)}</span>
+                </div>
+            `;
+        }).join("");
+    }
+
+    function formatBookingDate(value) {
+        const date = new Date(`${value}T00:00:00`);
+        return Number.isNaN(date.getTime())
+            ? value || "-"
+            : date.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    function formatBookingTime(value) {
+        if (!value) return "-";
+        const [hourText, minute] = value.split(":");
+        const hour = Number(hourText);
+        if (!Number.isFinite(hour) || minute === undefined) return value;
+        return `${hour % 12 || 12}:${minute} ${hour >= 12 ? "PM" : "AM"}`;
+    }
+
+    function escapeBookingText(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+</script>
+
+</body>
+</html>

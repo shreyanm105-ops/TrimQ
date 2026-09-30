@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | TrimQ</title>
+    <link rel="stylesheet" href="../css/customer.css">
+    <style>
+        .notification-list { display: grid; gap: 10px; margin-top: 20px; }
+        .notification { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 17px; border: 1px solid #e5e8f0; border-radius: 10px; background: white; }
+        .notification.unread { border-left: 3px solid #6257ee; background: #fbfaff; }
+        .notification h2 { margin: 0; font-size: 14px; }
+        .notification p { margin-top: 6px; color: #778297; font-size: 11px; line-height: 1.6; }
+        .notification time { display: block; margin-top: 8px; color: #929bb0; font-size: 10px; }
+        .notification-actions { flex-shrink: 0; }
+        .notification-actions button, .refresh-button { padding: 8px 11px; border: 1px solid #dfe3ec; border-radius: 7px; background: white; color: #354052; font: inherit; font-size: 10px; font-weight: 700; cursor: pointer; }
+        .notification-actions button:disabled { opacity: .55; cursor: wait; }
+        .page-actions { display: flex; gap: 8px; }
+        .notification-error { margin-top: 12px; color: #991b1b; font-size: 11px; }
+        @media (max-width: 600px) { .notification { flex-direction: column; } .notification-actions { align-self: flex-end; } }
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="brand">✂ Trim<span>Q</span></div>
+    <p class="nav-title">CUSTOMER</p>
+    <nav>
+        <a href="dashboard.html">⌂ Dashboard</a>
+        <a href="barber-list.html">✂ Find Barber</a>
+        <a href="my-bookings.html">▣ My Bookings</a>
+        <a href="booking.html">＋ New Booking</a>
+        <a href="queue.html">◷ Live Queue</a>
+        <a href="notifications.html" class="active">♢ Notifications</a>
+    </nav>
+    <div class="sidebar-bottom">
+        <a href="../index.html">← Back to Home</a>
+        <button type="button" data-logout>↪ Logout</button>
+    </div>
+</aside>
+<main class="main">
+    <header class="topbar">
+        <div>
+            <p class="page-label">UPDATES</p>
+            <h1>Notifications</h1>
+            <p class="subtitle">Booking and queue updates for your account.</p>
+        </div>
+        <div class="page-actions">
+            <button class="refresh-button" id="markAllRead" type="button">Mark all read</button>
+            <button class="refresh-button" id="refreshNotifications" type="button">Refresh</button>
+        </div>
+    </header>
+    <section class="content-card">
+        <div id="notificationCount" class="section-label"></div>
+        <div id="notificationError" class="notification-error" role="alert"></div>
+        <div id="notificationsContainer" class="notification-list" aria-live="polite">
+            <div class="empty-state"><h3>Loading notifications</h3></div>
+        </div>
+    </section>
+</main>
+<script src="../Js/api.js"></script>
+<script>
+    let customerNotifications = [];
+
+    document.addEventListener("DOMContentLoaded", initializeNotificationsPage);
+
+    async function initializeNotificationsPage() {
+        if (!requireCustomer()) return;
+        document.querySelector("[data-logout]").addEventListener("click", () => {
+            clearAuth();
+            window.location.href = "../index.html";
+        });
+        document.getElementById("refreshNotifications").addEventListener("click", loadNotifications);
+        document.getElementById("markAllRead").addEventListener("click", markAllRead);
+        document.getElementById("notificationsContainer").addEventListener("click", handleNotificationAction);
+        await loadNotifications();
+    }
+
+    async function loadNotifications() {
+        const container = document.getElementById("notificationsContainer");
+        container.innerHTML = '<div class="empty-state"><h3>Loading notifications</h3></div>';
+        document.getElementById("notificationError").textContent = "";
+
+        try {
+            const response = await apiGet("/api/customer/notifications");
+            customerNotifications = Array.isArray(response) ? response : [];
+            renderNotifications();
+        } catch (error) {
+            container.innerHTML = '<div class="empty-state"><h3>Unable to load notifications</h3></div>';
+            document.getElementById("notificationError").textContent = error.message || "Please try again.";
+        }
+    }
+
+    function renderNotifications() {
+        const container = document.getElementById("notificationsContainer");
+        const unreadCount = customerNotifications.filter(item => !item.is_read).length;
+        document.getElementById("notificationCount").textContent =
+            `${customerNotifications.length} notifications · ${unreadCount} unread`;
+        document.getElementById("markAllRead").disabled = unreadCount === 0;
+
+        if (customerNotifications.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div>♢</div>
+                    <h3>No notifications yet</h3>
+                    <p>Booking and queue updates will appear here.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = customerNotifications.map(item => `
+            <article class="notification ${item.is_read ? "" : "unread"}">
+                <div>
+                    <h2>${escapeNotificationText(item.title || "TrimQ update")}</h2>
+                    <p>${escapeNotificationText(item.message || "")}</p>
+                    <time>${escapeNotificationText(formatNotificationDate(item.created_at))}</time>
+                </div>
+                ${item.is_read ? "" : `<div class="notification-actions"><button type="button" data-notification-id="${Number(item.id)}">Mark read</button></div>`}
+            </article>
+        `).join("");
+    }
+
+    async function handleNotificationAction(event) {
+        const button = event.target.closest("button[data-notification-id]");
+        if (!button) return;
+        button.disabled = true;
+        try {
+            await setNotificationRead(button.dataset.notificationId);
+        } catch {
+            button.disabled = false;
+        }
+    }
+
+    async function markAllRead() {
+        const unread = customerNotifications.filter(item => !item.is_read);
+        const button = document.getElementById("markAllRead");
+        button.disabled = true;
+        const results = await Promise.allSettled(unread.map(item => setNotificationRead(item.id, false)));
+        if (results.some(result => result.status === "rejected")) {
+            document.getElementById("notificationError").textContent = "Some notifications could not be marked read. Refresh and try again.";
+        }
+        renderNotifications();
+    }
+
+    async function setNotificationRead(notificationId, render = true) {
+        try {
+            await apiPatch(`/api/customer/notifications/${encodeURIComponent(notificationId)}/read`);
+            const notification = customerNotifications.find(item => String(item.id) === String(notificationId));
+            if (notification) notification.is_read = true;
+            if (render) renderNotifications();
+        } catch (error) {
+            document.getElementById("notificationError").textContent = error.message || "Unable to update notification.";
+            throw error;
+        }
+    }
+
+    function formatNotificationDate(value) {
+        if (!value) return "";
+        const date = new Date(value);
+        return Number.isNaN(date.getTime())
+            ? value
+            : date.toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+    }
+
+    function escapeNotificationText(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Appointments - TrimQ</title>
+
+<link rel="stylesheet"
+      href="../css/barber.css">
+
+</head>
+
+<body>
+
+<aside class="barber-sidebar">
+
+    <div class="barber-brand">
+        <span>✂</span> TrimQ
+    </div>
+
+    <p class="barber-nav-title">
+        BARBER PANEL
+    </p>
+
+    <nav>
+
+        <a href="dashboard.html">
+            ⌂ Dashboard
+        </a>
+
+        <a href="appointments.html" class="active">
+            ▣ Appointments
+        </a>
+
+        <a href="queue.html">
+            ◷ Live Queue
+        </a>
+
+        <a href="services.html">
+            ✂ Services
+        </a>
+
+        <a href="shop-settings.html">
+            ⚙ Shop Settings
+        </a>
+
+    </nav>
+
+    <div class="barber-sidebar-bottom">
+
+        <a href="../index.html">
+            ← Back to Home
+        </a>
+
+        <button onclick="logout()">
+            ↪ Logout
+        </button>
+
+    </div>
+
+</aside>
+
+
+<main class="barber-main">
+
+<header class="barber-topbar">
+
+    <div>
+
+        <p class="barber-label">
+            MANAGEMENT
+        </p>
+
+        <h1>
+            Appointments
+        </h1>
+
+        <p>
+            Review and update customer booking requests.
+        </p>
+
+    </div>
+
+</header>
+
+
+<section class="barber-card">
+
+    <div class="barber-card-header">
+
+        <div>
+
+            <p class="barber-label">
+                SCHEDULE
+            </p>
+
+            <h2>
+                Today's Appointments
+            </h2>
+
+        </div>
+
+        <span id="appointmentCount" class="barber-label"></span>
+
+    </div>
+
+
+    <div class="appointment-table">
+
+        <div class="appointment-table-header">
+
+            <span>Customer</span>
+            <span>Service</span>
+            <span>Time</span>
+            <span>Status</span>
+            <span>Action</span>
+
+        </div>
+
+
+        <div id="appointmentsContainer">
+            <div class="empty-state">
+                <div>▣</div>
+                <h3>Loading appointments</h3>
+                <p>Checking for customer bookings.</p>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+<script src="../Js/api.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", loadBarberAppointments);
+
+    async function loadBarberAppointments() {
+        if (!requireBarber()) return;
+
+        document.querySelector(".barber-sidebar-bottom button").addEventListener("click", () => {
+            clearAuth();
+            window.location.href = "../index.html";
+        });
+
+        document.getElementById("appointmentsContainer").addEventListener("click", handleAppointmentAction);
+        await refreshAppointments();
+    }
+
+    async function refreshAppointments() {
+        const container = document.getElementById("appointmentsContainer");
+        container.innerHTML = '<div class="empty-state"><h3>Loading appointments</h3></div>';
+
+        try {
+            const appointments = await apiGet("/api/barber/appointments");
+            renderAppointments(Array.isArray(appointments) ? appointments : []);
+        } catch (error) {
+            document.getElementById("appointmentCount").textContent = "";
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>Unable to load appointments</h3>
+                    <p>${escapeAppointmentText(error.message || "Please try again.")}</p>
+                    ${error.message === "Shop not found" ? '<a href="shop-settings.html">Create your shop</a>' : ""}
+                </div>
+            `;
+        }
+    }
+
+    function renderAppointments(appointments) {
+        const container = document.getElementById("appointmentsContainer");
+        document.getElementById("appointmentCount").textContent =
+            `${appointments.length} appointment${appointments.length === 1 ? "" : "s"}`;
+
+        if (appointments.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div>▣</div>
+                    <h3>No appointments yet</h3>
+                    <p>Customer bookings will appear here.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const upcoming = appointments.filter(item => {
+            const date = new Date(`${item.booking_date}T00:00:00`);
+            return item.status !== "cancelled" && item.status !== "completed" && date >= today;
+        });
+
+        container.innerHTML = appointments.map(appointment => {
+            const status = String(appointment.status || "booked");
+            const action = upcoming.some(item => item.id === appointment.id)
+                ? getAppointmentActions(appointment)
+                : "";
+            return `
+                <div class="appointment-row">
+                    <span>${escapeAppointmentText(appointment.customer_name || "Customer")}</span>
+                    <span>${escapeAppointmentText(appointment.service_name || "Service")}</span>
+                    <span>${escapeAppointmentText(formatAppointmentDate(appointment.booking_date))} · ${escapeAppointmentText(formatAppointmentTime(appointment.slot_time))}</span>
+                    <span class="appointment-status">${escapeAppointmentText(status)}</span>
+                    <span class="appointment-actions">${action}</span>
+                </div>
+            `;
+        }).join("");
+    }
+
+    function getAppointmentActions(appointment) {
+        if (appointment.status === "booked") {
+            return `
+                <button type="button" data-booking-id="${Number(appointment.id)}" data-status="confirmed">Confirm</button>
+                <button type="button" data-booking-id="${Number(appointment.id)}" data-status="cancelled">Decline</button>
+            `;
+        }
+        if (appointment.status === "confirmed" || appointment.status === "serving") {
+            return `<button type="button" data-booking-id="${Number(appointment.id)}" data-status="completed">Complete</button>`;
+        }
+        return "";
+    }
+
+    async function handleAppointmentAction(event) {
+        const button = event.target.closest("button[data-booking-id]");
+        if (!button) return;
+
+        button.disabled = true;
+        try {
+            const query = new URLSearchParams({ status: button.dataset.status });
+            await apiPatch(`/api/barber/bookings/${encodeURIComponent(button.dataset.bookingId)}/status?${query}`);
+            await refreshAppointments();
+        } catch (error) {
+            button.disabled = false;
+            button.title = error.message || "Unable to update booking.";
+        }
+    }
+
+    function formatAppointmentDate(value) {
+        const date = new Date(`${value}T00:00:00`);
+        return Number.isNaN(date.getTime())
+            ? value || "-"
+            : date.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    function formatAppointmentTime(value) {
+        if (!value) return "-";
+        const [hourText, minute] = value.split(":");
+        const hour = Number(hourText);
+        if (!Number.isFinite(hour) || minute === undefined) return value;
+        return `${hour % 12 || 12}:${minute} ${hour >= 12 ? "PM" : "AM"}`;
+    }
+
+    function escapeAppointmentText(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+</script>
+
+</body>
+</html>

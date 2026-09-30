@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>TrimQ | Book Appointment</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/customer.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: #f5f7fb;
+            color: #111827;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 250px;
+            background: #111827;
+            color: white;
+            padding: 24px 16px;
+            position: fixed;
+            inset: 0 auto 0 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 25px;
+            font-weight: 800;
+            padding: 0 14px 30px;
+        }
+
+        .logo span {
+            color: #3b82f6;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 14px;
+            margin-bottom: 10px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #d1d5db;
+            text-decoration: none;
+            padding: 12px 14px;
+            border-radius: 9px;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: #1f2937;
+            color: white;
+        }
+
+        .nav a.active {
+            border-left: 3px solid #3b82f6;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 24px;
+            left: 16px;
+            right: 16px;
+        }
+
+        .logout button {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #374151;
+            background: transparent;
+            color: #d1d5db;
+            border-radius: 9px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+            padding: 28px;
+        }
+
+        .mobile-menu {
+            display: none;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+
+        .page-header {
+            margin-bottom: 22px;
+        }
+
+        .page-header h1 {
+            margin: 0 0 6px;
+            font-size: 28px;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* BOOKING GRID */
+
+        .booking-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 18px 20px;
+            border-bottom: 1px solid #eef0f3;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 17px;
+        }
+
+        .card-header p {
+            margin: 5px 0 0;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* FORM */
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 800;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            outline: none;
+            font-size: 14px;
+            background: white;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+
+        /* SHOP / SERVICE SUMMARY */
+
+        .summary-item {
+            display: flex;
+            gap: 12px;
+            padding: 13px 0;
+            border-bottom: 1px solid #eef0f3;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            background: #eff6ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .summary-label {
+            color: #9ca3af;
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+
+        .summary-value {
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        /* SLOTS */
+
+        .slots-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .slots-title strong {
+            font-size: 13px;
+        }
+
+        .slots-title span {
+            color: #6b7280;
+            font-size: 11px;
+        }
+
+        .slots {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 9px;
+        }
+
+        .slot-btn {
+            border: 1px solid #dbe1e8;
+            background: white;
+            color: #374151;
+            border-radius: 8px;
+            padding: 10px 5px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.15s ease;
+        }
+
+        .slot-btn:hover {
+            border-color: #2563eb;
+            color: #2563eb;
+        }
+
+        .slot-btn.selected {
+            background: #2563eb;
+            border-color: #2563eb;
+            color: white;
+        }
+
+        .slot-btn.disabled {
+            background: #f3f4f6;
+            color: #9ca3af;
+            border-color: #e5e7eb;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        .slot-loading {
+            color: #6b7280;
+            font-size: 12px;
+            padding: 15px 0;
+        }
+
+        .slot-empty {
+            background: #f9fafb;
+            border: 1px dashed #d1d5db;
+            padding: 18px;
+            border-radius: 9px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        /* CONFIRM */
+
+        .confirm-btn {
+            width: 100%;
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 13px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 18px;
+        }
+
+        .confirm-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .confirm-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* ALERT */
+
+        .alert {
+            padding: 12px 14px;
+            border-radius: 9px;
+            font-size: 12px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .alert.error {
+            display: block;
+            color: #991b1b;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .alert.success {
+            display: block;
+            color: #166534;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+        }
+
+        /* STATES */
+
+        .loading {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 40px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        /* SUCCESS */
+
+        .success-box {
+            text-align: center;
+            padding: 35px 20px;
+        }
+
+        .success-icon {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: #dcfce7;
+            color: #16a34a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 30px;
+        }
+
+        .success-box h2 {
+            margin: 0 0 8px;
+            font-size: 22px;
+        }
+
+        .success-box p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .success-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .success-actions a {
+            text-decoration: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .primary-link {
+            background: #2563eb;
+            color: white;
+        }
+
+        .secondary-link {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 900px) {
+            .booking-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: 0.25s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                width: 100%;
+                padding: 18px;
+            }
+
+            .mobile-menu {
+                display: block;
+                border: none;
+                background: #111827;
+                color: white;
+                padding: 9px 12px;
+                border-radius: 8px;
+                cursor: pointer;
+                margin-bottom: 15px;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .slots {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .page-header h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar" id="sidebar">
+
+        <div class="logo">
+            Trim<span>Q</span>
+        </div>
+
+        <div class="nav-title">Customer</div>
+
+        <nav class="nav">
+
+            <a href="dashboard.html">
+                🏠 Dashboard
+            </a>
+
+            <a href="barber-list.html">
+                💈 Find Barber
+            </a>
+
+            <a href="my-bookings.html">
+                📅 My Bookings
+            </a>
+
+            <a href="booking.html" class="active">
+                ➕ New Booking
+            </a>
+
+            <a href="queue.html">
+                🔴 Live Queue
+            </a>
+
+            <a href="notifications.html">
+                🔔 Notifications
+            </a>
+
+            <a href="#">
+                👤 Profile
+            </a>
+
+        </nav>
+
+        <div class="logout">
+            <button type="button" id="logoutBtn">
+                🚪 Logout
+            </button>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <button class="mobile-menu" id="mobileMenu">
+            ☰ Menu
+        </button>
+
+        <a href="barber-list.html" class="back-link">
+            ← Back to barber shops
+        </a>
+
+        <header class="page-header">
+
+            <h1>Book Appointment</h1>
+
+            <p>
+                Choose a barber, service, date and available time slot.
+            </p>
+
+        </header>
+
+
+        <!-- ALERT -->
+
+        <div id="alertBox" class="alert"></div>
+
+
+        <!-- LOADING -->
+
+        <div id="pageLoading" class="loading">
+            Loading booking details...
+        </div>
+
+
+        <!-- BOOKING CONTENT -->
+
+        <div id="bookingContent" style="display:none;">
+
+            <div class="booking-grid">
+
+                <!-- LEFT -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h2>Select Date & Time</h2>
+
+                        <p>
+                            Available slots are loaded directly from TrimQ.
+                        </p>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="field">
+
+                            <label for="shopSelect">
+                                Barber Shop
+                            </label>
+
+                            <select id="shopSelect">
+                                <option value="">Loading shops...</option>
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label for="serviceSelect">
+                                Service
+                            </label>
+
+                            <select id="serviceSelect" disabled>
+                                <option value="">Select a shop first</option>
+                            </select>
+
+                        </div>
+
+                        <div class="field">
+
+                            <label for="bookingDate">
+                                Appointment Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="bookingDate"
+                            >
+
+                        </div>
+
+
+                        <div class="slots-title">
+
+                            <strong>
+                                Available Time Slots
+                            </strong>
+
+                            <span id="slotHint">
+                                Select a date
+                            </span>
+
+                        </div>
+
+
+                        <div id="slotsContainer">
+
+                            <div class="slot-empty">
+                                Select a date to see available slots.
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="confirm-btn"
+                            id="confirmBtn"
+                            disabled
+                        >
+                            Confirm Booking
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RIGHT -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h2>Booking Summary</h2>
+
+                        <p>
+                            Review your appointment details.
+                        </p>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="summary-item">
+
+                            <div class="summary-icon">
+                                💈
+                            </div>
+
+                            <div>
+
+                                <div class="summary-label">
+                                    Shop
+                                </div>
+
+                                <div
+                                    class="summary-value"
+                                    id="summaryShop"
+                                >
+                                    Loading...
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <div class="summary-icon">
+                                ✂️
+                            </div>
+
+                            <div>
+
+                                <div class="summary-label">
+                                    Service
+                                </div>
+
+                                <div
+                                    class="summary-value"
+                                    id="summaryService"
+                                >
+                                    Loading...
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <div class="summary-icon">
+                                💰
+                            </div>
+
+                            <div>
+
+                                <div class="summary-label">
+                                    Price
+                                </div>
+
+                                <div
+                                    class="summary-value"
+                                    id="summaryPrice"
+                                >
+                                    -
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <div class="summary-icon">
+                                ⏱
+                            </div>
+
+                            <div>
+
+                                <div class="summary-label">
+                                    Duration
+                                </div>
+
+                                <div
+                                    class="summary-value"
+                                    id="summaryDuration"
+                                >
+                                    -
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <div class="summary-icon">
+                                📅
+                            </div>
+
+                            <div>
+
+                                <div class="summary-label">
+                                    Date
+                                </div>
+
+                                <div
+                                    class="summary-value"
+                                    id="summaryDate"
+                                >
+                                    -
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="summary-item">
+
+                            <div class="summary-icon">
+                                🕐
+                            </div>
+
+                            <div>
+
+                                <div class="summary-label">
+                                    Time
+                                </div>
+
+                                <div
+                                    class="summary-value"
+                                    id="summaryTime"
+                                >
+                                    Not selected
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SUCCESS -->
+
+        <div
+            id="successContent"
+            class="card"
+            style="display:none;"
+        >
+
+            <div class="success-box">
+
+                <div class="success-icon">
+                    ✓
+                </div>
+
+                <h2>Booking Confirmed!</h2>
+
+                <p id="successMessage">
+                    Your appointment has been successfully booked.
+                </p>
+
+                <div class="success-actions">
+
+                    <a
+                        href="my-bookings.html"
+                        class="primary-link"
+                    >
+                        View My Bookings
+                    </a>
+
+                    <a
+                        href="barber-list.html"
+                        class="secondary-link"
+                    >
+                        Find Another Barber
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script src="../Js/api.js"></script>
+
+<script src="../Js/booking.js"></script>
+
+</body>
+</html>
